@@ -1,5 +1,5 @@
 <?php
-require_once('../../controllers/PlatformController.php');
+require_once('../../controllers/ActorController.php');
 ?>
 
 <!DOCTYPE html>
@@ -18,18 +18,18 @@ require_once('../../controllers/PlatformController.php');
 <body>
 <?php
 $sendData = false;
-$platformEdited = false;
+$actorEdited = false;
 $errorMsg = "";
 
-$platformId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$actorId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 // Si no hay ID válido, no se puede editar
-if ($platformId <= 0) {
+if ($actorId <= 0) {
     $errorMsg = "ID inválido. No se puede editar.";
-    $platform = null;
+    $actor = null;
 } else {
-    $platform = getPlatformById($platformId);
-    if (!$platform) {
+    $actor = getActorById($actorId);
+    if (!$actor) {
         $errorMsg = "No existe una plataforma con el ID indicado.";
     }
 }
@@ -37,39 +37,80 @@ if ($platformId <= 0) {
 // Detectar envío
 if (isset($_POST['updateBtn'])) {
     $sendData = true;
-}
+
 
 // Procesar update
-    $postedId = isset($_POST['platformId']) ? (int)$_POST['platformId'] : 0;
-    $newName  = isset($_POST['platformName']) ? trim($_POST['platformName']) : "";
-    if ($newName === "") {
-        $errorMsg = "La plataforma ingresada ya existe.";
+    $actorId = isset($_POST['actorId']) ? (int)$_POST['actorId'] : 0;
+    $newName  = isset($_POST['actorName']) ? trim($_POST['actorName']) : "";
+    $newSurname = isset($_POST['actorSurname']) ? trim($_POST['actorSurname']) : "";
+    $newBirthdate = isset($_POST['actorBirthdate']) ? trim($_POST['actorBirthdate']) : "";
+    $newNationality = isset($_POST['actorNationality']) ? trim($_POST['actorNationality']) : "";
+
+    if ($newName === "" || $newSurname === "" || $newBirthdate === "" || $newNationality === "") {
+        $errorMsg = "No pueden haber campos vacíos.";
     } else {
-        $platformEdited = updatePlatform($postedId, $newName);} // <- controlador
-
-
-// Para el input: si falló y hay POST, mostramos lo escrito; si no, el valor de BD
-$currentName = "";
-if ($sendData) {
-    $currentName = isset($_POST['platformName']) ? trim($_POST['platformName']) : "";
-} else {
-    $currentName = $platform ? $platform->getName() : "";
+        $actorEdited = updateActor($actorId, $newName, $newSurname, $newBirthdate, $newNationality);
+    }
 }
+$currentName = "";
+$currentSurname = "";
+$currentBirthdate = date("Y-m-d");
+$currentNationality = "";
+
+if ($sendData) {
+    $currentName = isset($_POST['actorName']) ? trim($_POST['actorName']) : "";
+    $currentSurname = isset($_POST['actorSurname']) ? trim($_POST['actorSurname']) : "";
+    $currentBirthdate = isset($_POST['actorBirthdate']) ? trim($_POST['actorBirthdate']) : date("Y-m-d");
+    $currentNationality = isset($_POST['actorNationality']) ? trim($_POST['actorNationality']) : "";
+} else {
+    $currentName = $actor ? $actor->getName() : "";
+    $currentSurname = $actor ? $actor->getSurname() : ""; 
+    $currentBirthdate = $actor ? $actor->getBithdate() : date("Y-m-d");
+    $currentNationality = $actor ? $actor->getNationality() : "";
+}
+
 ?>
 
 <div class="container mt-4">
 <?php if (!$sendData) { ?>
        <div class="col-12">
-            <form name="edit_platform" action="edit.php?id=<?php echo (int)$platformId; ?>" method="POST">
-                <input type="hidden" name="platformId" value="<?php echo (int)$platformId; ?>">
+            <form name="edit_actor" action="edit.php?id=<?php echo (int)$actorId; ?>" method="POST">
+                <input type="hidden" name="actorId" value="<?php echo (int)$actorId; ?>">
                     <div class="mb-3">
-                        <label for="platformName" class="form-label">Nombre plataforma</label>
-                        <input id="platformName"
-                               name="platformName"
+                        <label for="actorName" class="form-label">Nombre</label>
+                        <input id="actorName"
+                               name="actorName"
                                type="text"
                                class="form-control"
-                               placeholder="Introduce nombre de la plataforma"
+                               placeholder="Introduce nombre"
                                value="<?php echo htmlspecialchars($currentName); ?>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="actorSurname" class="form-label">Apellido</label>
+                        <input id="actorSurname"
+                               name="actorSurname"
+                               type="text"
+                               class="form-control"
+                               placeholder="Introduce apellido"
+                               value="<?php echo htmlspecialchars($currentSurname); ?>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="actorBirthdate" class="form-label">Fecha de Nacimiento</label>
+                        <input id="actorBirthdate"
+                               name="actorBirthdate"
+                               type="date"
+                               class="form-control"
+                               placeholder="Introduce fecha de nacimiento"
+                               value="<?php echo htmlspecialchars($currentBirthdate); ?>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="actorNationality" class="form-label">Nacionalidad</label>
+                        <input id="actorNationality"
+                               name="actorNationality"
+                               type="text"
+                               class="form-control"
+                               placeholder="Introduce nacionalidad"
+                               value="<?php echo htmlspecialchars($currentNationality); ?>">
                     </div>
 
                     <input type="submit" value="Actualizar" class="btn btn-primary" name="updateBtn">
@@ -78,7 +119,7 @@ if ($sendData) {
             </div>
         </div>
     <?php } else { ?>
-        <?php if ($platformEdited) { ?>
+        <?php if ($actorEdited) { ?>
             <div class="alert alert-success" role="alert">
                 Plataforma editada correctamente.
                 <a href="list.php">Volver al listado de plataformas</a>
@@ -86,7 +127,7 @@ if ($sendData) {
         <?php } else { ?>
             <div class="alert alert-danger" role="alert">
                 La plataforma no se ha editado correctamente.
-                <a href="edit.php?id=<?php echo (int)$platformId; ?>">Volver a intentar</a>
+                <a href="edit.php?id=<?php echo (int)$actorId; ?>">Volver a intentar</a>
             </div>
         <?php }
     } ?>

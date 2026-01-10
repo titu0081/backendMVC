@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once('../../controllers/PlatformController.php');
+require_once('../../controllers/LanguageController.php');
 ?>
 
 <!DOCTYPE html>
@@ -11,7 +11,7 @@ require_once('../../controllers/PlatformController.php');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, initial-scale=1">
-    <title>Eliminar plataforma</title>
+    <title>Eliminar Idioma</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
@@ -22,28 +22,28 @@ require_once('../../controllers/PlatformController.php');
 <body>
 <?php
 
-$platformDeleted = false;
+$languageDeleted = false;
 $errorMsg = "";
 
-$platformId = isset($_POST['platformId']) ? (int)$_POST['platformId'] : 0;
+$languageId = isset($_POST['languageId']) ? (int)$_POST['languageId'] : 0;
 
 
-if ($platformId > 0) {
-    $platformDeleted = deletePlatform($platformId);
+if ($languageId > 0) {
+    $languageDeleted = deleteLanguage($languageId);
 }
 
 ?>
 
 <div class="container mt-4">
-    <?php if ($platformDeleted) { ?>
+    <?php if ($languageDeleted) { ?>
             <div class="alert alert-success" role="alert">
-                Plataforma eliminada correctamente.
+                El idioma ha sido eliminado correctamente.
                 <a href="list.php">Volver al listado de plataformas</a>
             </div>
         <?php } else { ?>
             <div class="alert alert-danger" role="alert">
-                La plataforma no se ha eliminado correctamente.
-                <a href="edit.php?id=<?php echo (int)$platformId; ?>">Volver a intentar</a>
+                El idioma no ha sido eliminado correctamente.
+                <a href="edit.php?id=<?php echo (int)$languageId; ?>">Volver a intentar</a>
             </div>
         <?php }
     ?>

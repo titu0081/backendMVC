@@ -1,95 +1,125 @@
 <?php
-require_once('../../controllers/PlatformController.php');
+require_once __DIR__ . '/../../controllers/SeriesController.php';
+
+$idSerie = $_GET['id'] ?? null;
+if (!$idSerie) {
+    die("ID de serie no proporcionado");
+}
+
+$controller = new SeriesController();
+$serie = $controller->show($idSerie);
+$data = $controller->create();
+$relations = $controller->getSerieRelations($idSerie);
+
+$actors = $data['actors'];
+$languages = $data['languages'];
+$platforms = $data['platforms'];
+$directors = $data['directors'];
+
+$seriesActors = $relations['actors'];
+$seriesLanguages = $relations['languages'];
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, initial-scale=1">
-    <title>Editar plataforma</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+ILRH9sENBO0LRn5q+8nbTov4+1p"
-            crossorigin="anonymous"></script>
+    <title>Editar Serie</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body>
-<?php
-$sendData = false;
-$platformEdited = false;
-$errorMsg = "";
+<body class="bg-light">
 
-$platformId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
 
-// Si no hay ID válido, no se puede editar
-if ($platformId <= 0) {
-    $errorMsg = "ID inválido. No se puede editar.";
-    $platform = null;
-} else {
-    $platform = getPlatformById($platformId);
-    if (!$platform) {
-        $errorMsg = "No existe una plataforma con el ID indicado.";
-    }
-}
-
-// Detectar envío
-if (isset($_POST['updateBtn'])) {
-    $sendData = true;
-}
-
-// Procesar update
-    $postedId = isset($_POST['platformId']) ? (int)$_POST['platformId'] : 0;
-    $newName  = isset($_POST['platformName']) ? trim($_POST['platformName']) : "";
-    if ($newName === "") {
-        $errorMsg = "La plataforma ingresada ya existe.";
-    } else {
-        $platformEdited = updatePlatform($postedId, $newName);} // <- controlador
-
-
-// Para el input: si falló y hay POST, mostramos lo escrito; si no, el valor de BD
-$currentName = "";
-if ($sendData) {
-    $currentName = isset($_POST['platformName']) ? trim($_POST['platformName']) : "";
-} else {
-    $currentName = $platform ? $platform->getName() : "";
-}
-?>
-
-<div class="container mt-4">
-<?php if (!$sendData) { ?>
-       <div class="col-12">
-            <form name="edit_platform" action="edit.php?id=<?php echo (int)$platformId; ?>" method="POST">
-                <input type="hidden" name="platformId" value="<?php echo (int)$platformId; ?>">
-                    <div class="mb-3">
-                        <label for="platformName" class="form-label">Nombre plataforma</label>
-                        <input id="platformName"
-                               name="platformName"
-                               type="text"
-                               class="form-control"
-                               placeholder="Introduce nombre de la plataforma"
-                               value="<?php echo htmlspecialchars($currentName); ?>">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Editar Serie</h4>
                     </div>
 
-                    <input type="submit" value="Actualizar" class="btn btn-primary" name="updateBtn">
-                    <a href="list.php" class="btn btn-secondary">Cancelar</a>
-                </form>
+                    <div class="card-body">
+
+                        <form action="update.php" method="POST">
+
+                            <input type="hidden" name="id_serie" value="<?= $serie->getId_series() ?>">
+
+                            <!-- Título -->
+                            <div class="mb-3">
+                                <label class="form-label">Título</label>
+                                <input type="text" name="title" class="form-control"
+                                    value="<?= $serie->getTitle() ?>" required>
+                            </div>
+
+                            <!-- Plataforma -->
+                            <div class="mb-3">
+                                <label class="form-label">Plataforma</label>
+                                <select name="id_platform" class="form-select" required>
+                                    <?php foreach ($platforms as $p) { ?>
+                                        <option value="<?= $p->getId_platform() ?>"
+                                            <?= $p->getId_platform() == $serie->getId_platform() ? 'selected' : '' ?>>
+                                            <?= $p->getName() ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+
+                            <!-- Director -->
+                            <div class="mb-3">
+                                <label class="form-label">Director</label>
+                                <select name="id_director" class="form-select" required>
+                                    <?php foreach ($directors as $d) { ?>
+                                        <option value="<?= $d->getId_director() ?>"
+                                            <?= $d->getId_director() == $serie->getId_director() ? 'selected' : '' ?>>
+                                            <?= $d->getName() . ' ' . $d->getSurname() ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+
+                            <!-- Actores -->
+                            <div class="mb-3">
+                                <label class="form-label">Actores</label>
+                                <select name="actors[]" class="form-select" multiple size="6">
+                                    <?php foreach ($actors as $a) { ?>
+                                        <option value="<?= $a->getId_actor() ?>"
+                                            <?= in_array($a->getId_actor(), $seriesActors) ? 'selected' : '' ?>>
+                                            <?= $a->getName() . ' ' . $a->getSurname() ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+
+                            <!-- Idiomas -->
+                            <div class="mb-3">
+                                <label class="form-label">Idiomas</label>
+                                <select name="languages[]" class="form-select" multiple size="6">
+                                    <?php foreach ($languages as $l) { ?>
+                                        <option value="<?= $l->getId_language() ?>"
+                                            <?= in_array($l->getId_language(), $seriesLanguages) ? 'selected' : '' ?>>
+                                            <?= $l->getName() ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+
+                            <!-- Botones -->
+                            <div class="d-flex justify-content-between">
+                                <a href="list.php" class="btn btn-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-primary">Actualizar Serie</button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
             </div>
         </div>
-    <?php } else { ?>
-        <?php if ($platformEdited) { ?>
-            <div class="alert alert-success" role="alert">
-                Plataforma editada correctamente.
-                <a href="list.php">Volver al listado de plataformas</a>
-            </div>
-        <?php } else { ?>
-            <div class="alert alert-danger" role="alert">
-                La plataforma no se ha editado correctamente.
-                <a href="edit.php?id=<?php echo (int)$platformId; ?>">Volver a intentar</a>
-            </div>
-        <?php }
-    } ?>
-</div>
+    </div>
+
 </body>
+
 </html>

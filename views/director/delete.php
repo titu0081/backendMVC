@@ -1,5 +1,5 @@
 <?php
-require_once('../../controllers/PlatformController.php');
+require_once('../../controllers/DirectorController.php');
 ?>
 
 <!DOCTYPE html>
@@ -18,20 +18,19 @@ require_once('../../controllers/PlatformController.php');
 <body>
 <?php
 
-$platformDeleted = false;
-$errorMsg = "";
+$directorDeleted = false;
 
-$platformId = isset($_POST['platformId']) ? (int)$_POST['platformId'] : 0;
+$directorId = isset($_POST['directorId']) ? (int)$_POST['directorId'] : 0;
 
 
-if ($platformId > 0) {
-    $platformDeleted = deletePlatform($platformId);
+if ($directorId > 0) {
+    $directorDeleted = deleteDirector($directorId);
 }
 
 ?>
 
 <div class="container mt-4">
-    <?php if ($platformDeleted) { ?>
+    <?php if ($directorDeleted) { ?>
             <div class="alert alert-success" role="alert">
                 Plataforma eliminada correctamente.
                 <a href="list.php">Volver al listado de plataformas</a>
@@ -39,7 +38,7 @@ if ($platformId > 0) {
         <?php } else { ?>
             <div class="alert alert-danger" role="alert">
                 La plataforma no se ha eliminado correctamente.
-                <a href="edit.php?id=<?php echo (int)$platformId; ?>">Volver a intentar</a>
+                <a href="edit.php?id=<?php echo (int)$directorId; ?>">Volver a intentar</a>
             </div>
         <?php }
     ?>

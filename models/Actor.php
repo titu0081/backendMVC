@@ -1,35 +1,35 @@
 <?php
 require_once __DIR__ . '/../models/DBConection.php';
-class Director
+class Actor
 {
-    private $id_director;
+    private $id_actor;
     private $name;
     private $surname;
     private $birthdate;
     private $nationality;
 
-    public function __construct($idDirector = null, $nameDirector = null, $surnameDirector = null, $birthdateDirector = null, $nationalityDirector = null)
+    public function __construct($idActor = null, $nameActor = null, $surnameActor = null, $birthdateActor = null, $nationalityActor = null)
     {
-        if (!is_null($idDirector)) {
-            $this->id_director = $idDirector;
+        if (!is_null($idActor)) {
+            $this->id_actor = $idActor;
         }
-        if (!is_null($nameDirector)) {
-            $this->name = $nameDirector;
+        if (!is_null($nameActor)) {
+            $this->name = $nameActor;
         }
-        if (!is_null($surnameDirector)) {
-            $this->surname = $surnameDirector;
+        if (!is_null($surnameActor)) {
+            $this->surname = $surnameActor;
         }
-        if (!is_null($birthdateDirector)) {
-            $this->birthdate = $birthdateDirector;
+        if (!is_null($birthdateActor)) {
+            $this->birthdate = $birthdateActor;
         }
-        if (!is_null($nationalityDirector)) {
-            $this->nationality = $nationalityDirector;
+        if (!is_null($nationalityActor)) {
+            $this->nationality = $nationalityActor;
         }
     }
 
-    public function getId_director()
+    public function getId_actor()
     {
-        return $this->id_director;
+        return $this->id_actor;
     }
 
     public function getName()
@@ -52,9 +52,9 @@ class Director
         return $this->nationality;
     }
 
-    public function setId_director($id_director)
+    public function setId_actor($id_actor)
     {
-        $this->id_director = $id_director;
+        $this->id_actor = $id_actor;
     }
 
     public function setName($name)
@@ -81,11 +81,11 @@ class Director
     {
         $mysqli = DBConection::getConection();
 
-        $query = $mysqli->query('SELECT * FROM directors');
+        $query = $mysqli->query('SELECT * FROM actors');
         $listData = [];
 
         foreach ($query as $item) {
-            $itemObject = new Director($item['id_director'], $item['name'], $item['surname'], $item['birthdate'], $item['nationality']);
+            $itemObject = new Actor($item['id_actor'], $item['name'], $item['surname'], $item['birthdate'], $item['nationality']);
             array_push($listData, $itemObject);
             #$listData[]= $itemObject; Otra forma de introducirlo en el array
         }
@@ -94,54 +94,54 @@ class Director
 
     public function store()
     {
-        $directorCreated = false;
+        $actorCreated = false;
         $mysqli = DBConection::getConection();
 
-        if ($resultInsert = $mysqli->query("INSERT INTO directors (name, surname, birthdate, nationality) 
+        if ($resultInsert = $mysqli->query("INSERT INTO actors (name, surname, birthdate, nationality) 
         VALUES ('$this->name', '$this->surname', '$this->birthdate', '$this->nationality')")) {
-            $directorCreated = true;
+            $actorCreated = true;
         }
 
-        return $directorCreated;
+        return $actorCreated;
     }
 
     public function update()
     {
-        $directorEdited = false;
+        $actorEdited = false;
         $mysqli = DBConection::getConection();
 
-        if ($resultEdit = $mysqli->query("UPDATE directors set name = '" . $this->name .
+        if ($resultEdit = $mysqli->query("UPDATE actors set name = '" . $this->name .
             "', surname = '" . $this->surname . "', birthdate = '" . $this->birthdate . "', nationality = '" . $this->nationality .
-            "' WHERE id_director = " . $this->id_director)) {
-            $directorEdited = true;
+            "' WHERE id_actor = " . $this->id_actor)) {
+            $actorEdited = true;
         }
 
-        return $directorEdited;
+        return $actorEdited;
     }
 
 
     public function delete()
     {
-        $directorDeleted = false;
+        $actorDeleted = false;
         $mysqli = DBConection::getConection();
 
-        if ($resultDelete = $mysqli->query("DELETE FROM directors WHERE id_director = " . $this->id_director)) {
-            $directorDeleted = true;
+        if ($resultDelete = $mysqli->query("DELETE FROM actors WHERE id_actor = " . $this->id_actor)) {
+            $actorDeleted = true;
         }
 
-        return $directorDeleted;
+        return $actorDeleted;
     }
 
     public function getById($id)
     {
         $mysqli = DBConection::getConection();
         $query = $mysqli->query(
-            "SELECT * FROM directors WHERE id_director = " . (int)$id
+            "SELECT * FROM actors WHERE id_actor = " . (int)$id
         );
-        $director = null;
+        $actor = null;
         if ($row = $query->fetch_assoc()) {
-            $director = new Director($row['id_director'], $row['name'], $row['surname'], $row['birthdate'], $row['nationality']);
+            $actor = new Actor($row['id_actor'], $row['name'], $row['surname'], $row['birthdate'], $row['nationality']);
         }
-        return $director;
+        return $actor;
     }
 }

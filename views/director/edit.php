@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once('../../controllers/DirectorController.php');
 ?>
 
@@ -21,10 +25,23 @@ $sendData = false;
 $directorEdited = false;
 $errorMsg = "";
 
+$directorId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+// Si no hay ID válido, no se puede editar
+if ($directorId <= 0) {
+    $errorMsg = "ID inválido. No se puede editar.";
+    $director = null;
+} else {
+    $director = getDirectorById($directorId);
+    if (!$director) {
+        $errorMsg = "No existe una plataforma con el ID indicado.";
+    }
+}
+
 // Detectar envío
 if (isset($_POST['updateBtn'])) {
     $sendData = true;
-}
+
 
 // Procesar update
     $directorId = isset($_POST['directorId']) ? (int)$_POST['directorId'] : 0;
@@ -38,7 +55,7 @@ if (isset($_POST['updateBtn'])) {
     } else {
         $directorEdited = updateDirector($directorId, $newName, $newSurname, $newBirthdate, $newNationality);
     }
-
+}
 $currentName = "";
 $currentSurname = "";
 $currentBirthdate = date("Y-m-d");
@@ -47,14 +64,15 @@ $currentNationality = "";
 if ($sendData) {
     $currentName = isset($_POST['directorName']) ? trim($_POST['directorName']) : "";
     $currentSurname = isset($_POST['directorSurname']) ? trim($_POST['directorSurname']) : "";
-    $currentBirthdate = isset($_POST['directorBirthdate']) ? trim($_POST['directorBirthdate']) : "";
+    $currentBirthdate = isset($_POST['directorBirthdate']) ? trim($_POST['directorBirthdate']) : date("Y-m-d");
     $currentNationality = isset($_POST['directorNationality']) ? trim($_POST['directorNationality']) : "";
 } else {
     $currentName = $director ? $director->getName() : "";
     $currentSurname = $director ? $director->getSurname() : ""; 
     $currentBirthdate = $director ? $director->getBithdate() : date("Y-m-d");
-    $currentNationality = $director ? $$director->getNationality() : "";
+    $currentNationality = $director ? $director->getNationality() : "";
 }
+
 ?>
 
 <div class="container mt-4">
@@ -96,7 +114,7 @@ if ($sendData) {
                                type="text"
                                class="form-control"
                                placeholder="Introduce nacionalidad"
-                               value="<?php echo htmlspecialchars($currentSurname); ?>">
+                               value="<?php echo htmlspecialchars($currentNationality); ?>">
                     </div>
 
                     <input type="submit" value="Actualizar" class="btn btn-primary" name="updateBtn">

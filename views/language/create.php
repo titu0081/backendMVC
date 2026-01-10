@@ -1,5 +1,9 @@
 <?php
-require_once('../../controllers/PlatformController.php');
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require_once('../../controllers/LanguageController.php');
 ?>
 
 <!DOCTYPE html>
@@ -18,26 +22,30 @@ require_once('../../controllers/PlatformController.php');
     <div class="container mt-4">
         <?php
             $sendData = false;
-            $platformCreated = false;
+            $languageCreated = false;
             if (isset($_POST['createBtn'])) {
                 $sendData = true;
             }
             if($sendData){
-                if(isset($_POST['platformName'])){
-                    $platformCreated = storePlatform($_POST['platformName']) ;
+                if(isset($_POST['languageName']) || isset($_POST['languageIso_code'])){
+                    $languageCreated = storeLanguage($_POST['languageName'], $_POST['languageIso_code']); 
                 }
             }
             if (!$sendData) {
                 ?>
                 <div class="row">
                     <div class="col-12">
-                        <h1>Crear plataforma</h1>
+                        <h1>Ingresar Nuevo Idioma</h1>
                     </div>
                     <div class="col-12">
-                        <form name="create_platform" action="" method="POST">
+                        <form name="create_language" action="" method="POST">
                             <div class="mb-3">
-                                <label for="platformName" class="form-label">Nombre plataforma</label>
-                                <input id="platformName" name="platformName" type="text" placeholder="Introduce nombre de la plataforma">
+                                <label for="languageName" class="form-label">Nombre idioma</label>
+                                <input id="languageName" name="languageName" type="text" placeholder="Nombre del idioma">
+                            </div>
+                            <div class="mb-3">
+                                <label for="languageIso_code" class="form-label">Iso Code Idioma</label>
+                                <input id="languageIso_code" name="languageIso_code" type="text" placeholder="Codigo ISO del idioma">
                             </div>
                             <input type="submit" value="Crear" class="btn btn-primary" name="createBtn" >
                         </form>
@@ -45,18 +53,18 @@ require_once('../../controllers/PlatformController.php');
                 </div>
                 <?php
                 } else {
-                    if ($platformCreated) {
+                    if ($languageCreated) {
                 ?>
                 <div class="row">
                 <div class="alert alert-success" role="alert">
-                    Plataforma creada correctamente. <a href="list.php">Volver al listado de plataforformas</a>
+                    Idioma ingresado correctamente. <a href="list.php">Volver al listado de idiomas</a>
                     </div>
                 <?php
                 } else {
                 ?>
                 <div class="row">
                     <div class="alert alert-danger" role="alert">
-                        La plataforma no se ha creado correctamente. <a href="create.php">Volver a ingresar plataforma</a>
+                        Idioma no se ha creado correctamente. <a href="create.php">Volver a ingresar idioma</a>
                     </div>
                 </div>
                 <?php

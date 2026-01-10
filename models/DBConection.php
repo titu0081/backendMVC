@@ -1,37 +1,40 @@
 <?PHP
-    class DBConection{
+class DBConection
+{
 
-        private static $mysqli;
-        private static $init = false;
+    private static $mysqli;
+    private static $init = false;
 
-        public static function iniConnectionDb(){
-            $db_host = "localhost";
-            $db_user = "root";
-            $db_password = "root";
-            $db_name = "actividad_1";
+    public static function iniConnectionDb()
+    {
+        $db_host = "localhost";
+        $db_user = "root";
+        $db_password = "Residentevil5_??";
+        $db_name = "seriesDB";
 
-            $mysqli = @new mysqli(
-                $db_host,
-                $db_user,
-                $db_password,
-                $db_name
-            );
-            
-            if($mysqli->connect_error){
-                die('Error: '.$mysqli->connect_error);
-            }
+        $mysqli = @new mysqli(
+            $db_host,
+            $db_user,
+            $db_password,
+            $db_name
+        );
 
-            self::$mysqli = $mysqli;
-            self::$init = true;
+        if ($mysqli->connect_error) {
+            die('Error: ' . $mysqli->connect_error);
+        }
 
-            return $mysqli;
-        }   
+        self::$mysqli = $mysqli;
+        self::$init = true;
 
-        public static function getConection(){
-            if(self::$init){ 
-                return self::$mysqli;
-            } else {
-                return self::iniConnectionDb();
-            }
+        return $mysqli;
+    }
+
+    public static function getConection()
+    {
+        if (self::$init) {
+            return self::$mysqli;
+        } else {
+            return self::iniConnectionDb();
         }
     }
+}
