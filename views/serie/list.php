@@ -21,7 +21,10 @@ $seriesList = (new SeriesController())->index();   // función del controller
 
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h1>Listado de series</h1>
-            <a href="create.php" class="btn btn-primary mt-2">Crear serie</a>
+            <div class="d-flex gap-2">
+                <a href="create.php" class="btn btn-primary mt-2">Crear serie</a>
+                <a href="../../index.html" class="btn btn-secondary mt-2">Ir inicio</a>
+            </div>
         </div>
 
         <?php if (count($seriesList) > 0) { ?>
